@@ -7,14 +7,6 @@
     max-width: 300px;
 }
 
-.b{
-    border: 1px solid red;
-}
-
-.b1{
-    border : 1px solid green;
-}
-
 .btn-tweet{
     border-radius: 30px;
 }
@@ -22,3 +14,26 @@
 .img-fluid{
     max-height: 100px;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+.link-deco-none {
+    color: inherit;
+    text-decoration:none;
+}
+.link-deco-none:hover {
+    color: inherit;
+    text-decoration:none;
+}
+
+#search-menu{
+    z-index: 1;
+    width: 300px;
+    transition: background 0.2s;
+}
+.search-menu-item:hover{
+    background-color: #eee;
+    transition: background 0.2s;
+}
+

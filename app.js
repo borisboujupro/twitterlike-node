@@ -25,9 +25,7 @@ app.use(sessionPassportMW)
 
 app.use(index)
 
-
-
-if('DEV' === process.env.NODE_ENV){
+if('dev' === process.env.NODE_ENV){
     app.use(errorHandler())
 }else{
     app.use((err,req,res,next) => {

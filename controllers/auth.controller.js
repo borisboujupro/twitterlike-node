@@ -1,7 +1,7 @@
 const passport = require('passport')
 
 exports.signinForm = (req,res,next) => {
-    res.render('auth/auth-form', { errors : null, isAuthenticated : req.isAuthenticated() , user : req.user })
+    res.render('auth/auth-form', { errors : null, isAuthenticated : req.isAuthenticated() , currentUser : req.user })
 }
 
 exports.signin = (req,res,next) => {
@@ -22,7 +22,7 @@ exports.signin = (req,res,next) => {
             }
             res.render('auth/auth-form',{
                 errors : infos,
-                isAuthenticated : req.isAuthenticated() , user : req.user
+                isAuthenticated : req.isAuthenticated() , currentUser : req.user
             })
         }
     })(req,res,next)

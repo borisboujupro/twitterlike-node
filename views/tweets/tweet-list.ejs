@@ -1,12 +1,19 @@
 <% tweetsList.forEach(tweet => { %>
     <div class="card tweet-element border-top-0 border-right-0 border-left-0 border-secondary rounded-0">
-        <div class="card-body">
-            <a class="card-text" href="/tweets/edit/<%=tweet._id%>">
-                <%= tweet.content %>
-            </a>
-            <% if(locals.isAuthenticated) {%>
-            <button class="btn btn-danger mt-2 float-right btn-tweet-delete" tweetId="<%=tweet._id%>">X</button>
-            <%}%>
+        <div class="card-body flex-column d-flex">
+            <div class="d-flex flex-row justify-content-center">
+                <img src="<%=tweet.author.avatar%>" class="pr-2" alt="" width="30">
+                <span class="flex-fill"><%=tweet.author.username%></span>
+                <% if(locals.isAuthenticated && tweet.author._id.toString() === currentUser._id.toString()) {%>
+                <div class="flex-row d-flex justify-content-center">
+                    <a class="fas fa-edit pr-2" href="/tweets/edit/<%=tweet._id%>"></a>
+                    <i class="fas fa-minus-circle cursor-pointer" tweetId="<%=tweet._id%>"></i>
+                </div>
+                <%}%>
+            </div>
+            <div>
+                <%= tweet.content %> 
+            </div>
         </div>                        
     </div>
 <% }) %>

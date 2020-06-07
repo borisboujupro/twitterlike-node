@@ -4,8 +4,7 @@ window.addEventListener('DOMContentLoaded',() => {
     const avatarForm = document.querySelector('#avatar-form')
 
     avatarImg.addEventListener('click', (event) => {        
-       avatarInput.click()
-      
+       avatarInput.click()      
     })
 
     avatarInput.addEventListener('change',(event) => {           

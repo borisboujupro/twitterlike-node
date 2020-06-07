@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
         password : { type : String , required : [ true , "You must provide a password"] }
     },
     googleId : { type : String }, // TODO Chapitre Oauth2
-    avatar : { type : String , default : "/images/defaultProfile.png"}
+    avatar : { type : String , default : "/images/defaultProfile.png"},
+    following : { type : [ mongoose.Schema.Types.ObjectId], ref : 'users'}
 })
 
 userSchema.statics.hashPassword = (password) => {
@@ -19,7 +20,7 @@ userSchema.methods.comparePassword = function(password){
     return bcryp.compare(password,this.local.password)
 }
 
-const Users = mongoose.model('user',userSchema)
+const Users = mongoose.model('users',userSchema)
 
 exports.Users = Users
 
@@ -44,4 +45,28 @@ exports.findUserPerEmail = (email) => {
 
 exports.findUserPerId = (userId) => {
     return Users.findById(userId)
+}
+
+exports.findUserPerUsername= (username) => {
+    return Users.findOne({username})
+}
+
+exports.searchUserPerUsername = (searchKey) => {
+    const regex = new RegExp('^'+searchKey,'i')
+    return Users.find({ username :  { $regex : regex}})
+}
+
+exports.removeUserIdOfCurrentFollowing = (userId,currentUser) => {
+    const userIndex = currentUser.following.indexOf(userId)
+    console.log("ici "+userIndex+"<-----------------------------------------")
+    console.log("ici "+JSON.stringify(currentUser.following)+"<-----------------------------------------")
+    currentUser.following.splice(userIndex,1)
+    console.log("ici "+JSON.stringify(currentUser.following)+"<-----------------------------------------")
+    return currentUser.save()
+}
+exports.addUserIdToCurrentFollowing = (userId,currentUser ) => {
+    
+    currentUser.following.push(userId)
+    return currentUser.save()
+    
 }

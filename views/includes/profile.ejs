@@ -7,17 +7,25 @@
         </form>
         <div class="d-flex flex-row justify-content-center align-items-center my-3">
             <p>
-                <%= user.username + ' (' + user.local.email + ')'%> 
-                 
+                <%= user.username + ' (' + user.local.email + ')'%>    
             </p>
         </div>
+        <% if(locals.isAuthenticated && user._id.toString() !== currentUser._id.toString()) {%>
+            <div class="d-flex flex-row justify-content-center align-items-center">
+                <% if(currentUser.following.map( (objectId) => objectId.toString()).includes(user._id.toString())) { %>
+                    <a href="/users/unfollow/<%=user._id%>" class="btn btn-outline-primary btn-tweet"><strong>Unfollow</strong></a>
+                <%}  else { %>
+                    <a href="/users/follow/<%=user._id%> " class="btn btn-primary btn-tweet"><strong>Follow</strong></a>
+                <% } %> 
+            </div>
+        <%}%>
         <div class="d-flex flex-row justify-content-center align-items-center my-3">
             <div class="flex-fill text-center">
                 <p>
                     <strong>Tweets</strong>
                     <br>
                     <span class="text-primary">
-                        <%= (locals.tweetsList && tweetsList)?tweetsList.length:'-'%><!--(TODO Tweets for user) --> 
+                        <%= (locals.tweetsList && tweetsList)?tweetsList.filter( (tweet) => { return tweet.author._id.toString() === locals.currentUser._id.toString()}).length:'-'%><!--(TODO Tweets for user) --> 
                     </span>
                 </p>                
             </div>
@@ -26,7 +34,7 @@
                     <strong>Follow</strong>
                     <br>
                     <span class="text-primary">
-                        . TODO
+                        <%= (locals.user && user && user.following)?user.following.length:'-'%>
                     </span>
                 </p>     
             </div>

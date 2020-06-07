@@ -1,5 +1,5 @@
 deleteTweetBtnBinder = () => {
-    const deleteElements = document.querySelectorAll('.btn-tweet-delete')
+    const deleteElements = document.querySelectorAll('.tweet-list-delete')
     deleteElements.forEach((btn) => {
         btn.addEventListener('click',(event) => {
             const tweetId = event.target.getAttribute('tweetId')

@@ -9,7 +9,7 @@ const tweetSchema = mongoose.Schema({
     },
     author : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'user',
+        ref : 'users',
         required : true
     }
 })
@@ -40,4 +40,12 @@ exports.getTweet = (tweetId) => {
 
 exports.updateTweet = (tweetId,tweet) => {
     return Tweets.findByIdAndUpdate(tweetId, { $set : tweet } , { runValidators : true })
+}
+
+exports.getTweetsForCurrentUserWithFollowing = (user) => {
+    return Tweets.find({ author : { $in : [user._id,...user.following] }}).populate('author')
+}
+
+exports.getTweetsForUser = (user) => {
+    return Tweets.find({ author : user._id}).populate('author')
 }

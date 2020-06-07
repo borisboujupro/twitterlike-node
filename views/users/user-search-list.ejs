@@ -1,0 +1,14 @@
+<div id="search-menu" class="d-flex flex-column justify-content-top border border-secondary position-absolute ml-3 bg-white shadow">
+    <% if(locals.users && users && users.length) { %> 
+        <% users.forEach(user => { %>
+            <a href="/users/<%=user.username%>" class="search-menu-item d-flex flex-row align-items-center border-bottom border-secondary px-3 py-2 cursor-pointer link-deco-none">
+                <img src="<%=(user.avatar)?user.avatar:'/images/defaultProfile.png'%>" width="40" class="p-2" alt="">
+                <span  class="p-2" ><%=user.username%></span>
+            </a>
+        <% }) %>
+    <% } else { %>
+        <div class="search-menu-item d-flex flex-row align-items-center border-bottom border-secondary px-3 py-2 cursor-pointer">
+            No Results
+        </div>
+    <% } %>
+</div>
