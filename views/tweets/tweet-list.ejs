@@ -1,0 +1,12 @@
+<% tweetsList.forEach(tweet => { %>
+    <div class="card tweet-element border-top-0 border-right-0 border-left-0 border-secondary rounded-0">
+        <div class="card-body">
+            <a class="card-text" href="/tweets/edit/<%=tweet._id%>">
+                <%= tweet.content %>
+            </a>
+            <% if(locals.isAuthenticated) {%>
+            <button class="btn btn-danger mt-2 float-right btn-tweet-delete" tweetId="<%=tweet._id%>">X</button>
+            <%}%>
+        </div>                        
+    </div>
+<% }) %>

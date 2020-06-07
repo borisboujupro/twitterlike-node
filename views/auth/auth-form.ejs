@@ -1,0 +1,42 @@
+<%- contentFor('content')%>
+<div class="d-flex flex-row content justify-content-center mx-auto">
+    <form class="card w-50" action="/auth/signin" method="post">
+        <div class="card-header">
+            Connextion
+        </div>
+        <div class="card-body"> 
+            <div class="form-group">
+                <label>
+                    E-mail
+                </label>
+                <input class="form-control <%if(locals.errors && errors && errors.email){%>is-invalid<% } %>" 
+                    name="email" type="email" id="email" placeholder="xxx@xxx.com">
+                <div class="invalid-feedback">
+                    <% if(locals.errors && errors && errors.email) { %>
+                        
+                        <%=errors.email.message%>
+                    
+                    <% } %>
+                </div>
+            </div>  
+            <div class="form-group">
+                <label>
+                    Password
+                </label>
+                <input class="form-control <%if(locals.errors && errors && errors.password){%>is-invalid<% } %>" 
+                    name="password" type="password" id="password" placeholder="" >
+                    
+                <div class="invalid-feedback">
+                    <% if(locals.errors && errors && errors.password) { %>
+                        
+                        <%=errors.password.message%>
+                    
+                    <% } %>
+                </div>  
+            </div>     
+            <div class="w-100">
+                <input type="submit" value="Sign in" class="btn btn-primary d-block ml-auto btn-tweet">    
+            </div>       
+        </div>
+    </form>
+</div>  

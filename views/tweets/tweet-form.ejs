@@ -1,0 +1,29 @@
+<%- contentFor('content')%>
+    <div class="d-flex flex-row content mx-auto">
+        
+        <%- include('../includes/profile') %>
+        
+        <div class="flex-fill">
+            <form class="card" action="<%=(locals.tweet && tweet && tweet._id)?'/tweets/edit/'+tweet._id:'/tweets/new'%>" method="post">
+                <div class="card-header">
+                    Ecrire un tweet
+                </div>
+                <div class="card-body"> 
+                    <div class="form-group">
+                        <div class="input-group">
+                            <textarea class="form-control <%if(locals.errors && errors && errors.content){%>is-invalid<% } %>" name="content" id="content" placeholder="Exprimez-vous en 140 caractères"><%=tweet.content%></textarea> 
+                            <div class="invalid-feedback">
+                                <% if(locals.errors && errors && errors.content) { %>
+                                
+                                    <%=errors.content.message%>
+                             
+                                <% } %>
+                            </div>
+                        </div>                      
+                        <input type="submit" value="Send" class="btn btn-primary d-block ml-auto btn-tweet">
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>

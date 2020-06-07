@@ -1,0 +1,15 @@
+<%- contentFor('content')%>
+    <script src="/javascripts/tweets/tweet.js"></script>
+    
+    <div class="d-flex flex-row content mx-auto">
+        
+        <%- include('../includes/profile') %>
+        
+        <div class="flex-fill flex-column d-flex" id="tweet-list-container">
+            
+            <% if(locals.tweetsList && tweetsList && tweetsList.length) { %>
+                
+                <%- include('tweet-list') %>
+            <% } %>
+        </div>
+    </div>
