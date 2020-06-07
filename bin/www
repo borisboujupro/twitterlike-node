@@ -7,15 +7,15 @@ const env = require('../environment/'+process.env.NODE_ENV)
  
 http.createServer((req,res) => {
     res.writeHead('301', {
-        Location : 'https://'+req.headers.host+req.url
+        Location : 'https://'+req.headers.host.split(':')[0]+':'+env.httpsPort+req.url
     })
     res.end()
-}).listen(80)
+}).listen(env.httpPort)
 
 const server = https.createServer({
     key : fs.readFileSync(env.key),
     cert : fs.readFileSync(env.cert)
 },app)
 
-server.listen(443)
+server.listen(env.httpsPort)
 
