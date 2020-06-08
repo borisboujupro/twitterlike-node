@@ -1,4 +1,5 @@
 <%- contentFor('content')%>
+<script src="/javascripts/auth/auth-form.js"></script>
 <div class="d-flex flex-row content justify-content-center mx-auto">
     <form class="card w-50" action="/auth/signin" method="post">
         <div class="card-header">
@@ -35,6 +36,7 @@
                 </div>  
             </div>     
             <div class="w-100">
+                <div id="forgot-password-button" class="cursor-pointer text-secondary text-small"><small>Forgot password ?</small></div>
                 <input type="submit" value="Sign in" class="btn btn-primary d-block ml-auto btn-tweet">    
             </div>       
         </div>

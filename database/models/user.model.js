@@ -8,7 +8,9 @@ const userSchema = mongoose.Schema({
         email : {  type : String ,  required : [true , "You must provide and email" ], unique : true},
         emailToken : { type : String },
         emailVerified : { type : Boolean, default : false},
-        password : { type : String , required : [ true , "You must provide a password"] }
+        password : { type : String , required : [ true , "You must provide a password"] },
+        passwordToken : { type : String },
+        passwordTokenExpiration : { type : Date }
     },
     googleId : { type : String }, // TODO Chapitre Oauth2
     avatar : { type : String , default : "/images/defaultProfile.png"},
@@ -22,6 +24,8 @@ userSchema.statics.hashPassword = (password) => {
 userSchema.methods.comparePassword = function(password){
     return bcryp.compare(password,this.local.password)
 }
+
+userSchema.methods.hashPassword = userSchema.statics.hashPassword 
 
 const Users = mongoose.model('users',userSchema)
 

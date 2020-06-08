@@ -1,4 +1,5 @@
-const { createUserLocal,findUserPerUsername, findUserPerId, searchUserPerUsername, removeUserIdOfCurrentFollowing,addUserIdToCurrentFollowing} = require('../database/models/user.model')
+const { createUserLocal,findUserPerUsername, findUserPerId, findUserPerEmail,
+     searchUserPerUsername, removeUserIdOfCurrentFollowing,addUserIdToCurrentFollowing } = require('../database/models/user.model')
 const { getTweetsForUser } = require('../database/models/tweet.model')
 const path = require('path')
 const multer = require('multer')
@@ -13,6 +14,7 @@ const upload = multer({
     })
 })
 
+const { v4: uuidv4 } = require('uuid');
 const emailFactory = require('../email')
 
 exports.signup = async (req,res,next) => {
@@ -86,7 +88,6 @@ exports.followUser = async (req,res,next) => {
     try{
         const userId = req.params.userId
         const currentUser = req.user
-        console.log("là <-----------------------------------------")
         await addUserIdToCurrentFollowing(userId,currentUser)
         res.redirect(req.get('referer'))
     }catch(e){
@@ -118,5 +119,119 @@ exports.verifyEmailLink = async (req,res,next) => {
         }
     } catch (error) {
         next(error)
+    }
+}
+
+
+exports.initForgotPassword = async (req,res,next) => {
+    try{
+        const { email } = req.body
+        const user = await findUserPerEmail(email)
+        if(user){
+            user.local.passwordToken = uuidv4()
+            let dateExpiration = new Date()
+            dateExpiration.setMinutes(dateExpiration.getMinutes() + 2)
+            user.local.passwordTokenExpiration = dateExpiration
+            await user.save()
+            emailFactory.sendEmailPasswordReset({
+                to : user.local.email,
+                host : req.headers.host,
+                username : user.username,
+                userId : user._id,
+                passwordToken : user.local.passwordToken
+            }).catch( err => {console.log(err)})
+            res.status(200).json({
+                email : email
+            })
+        }else{
+            res.status(400).json("Utilisateur inconnu");
+        }        
+    } catch(e) {
+        next(e)
+    }
+}
+
+exports.verifyPasswordLink = async (req,res,next)  => {
+    try{
+        const { userId, passwordToken } = req.params
+        const user = await findUserPerId(userId)
+        if(user){
+            if(user.local.passwordToken === passwordToken){
+                
+                if(new Date() < user.local.passwordTokenExpiration){
+                    res.render('auth/auth-reset-password',{
+                        url : `https://${req.headers.host}/users/reset-password/${user._id}/${user.local.passwordToken}`,
+                        isAuthenticated : false,
+                        errors : null
+                    })
+                }else{
+                    return res.status(400).json("Le lien de réinitialisation a expiré, veuillez recommencer la procédure");
+                }
+            }else{
+                return res.status(400).json("L'utilisateur n'existe pas");
+            }
+        }else{
+            return res.status(400).json("L'utilisateur n'existe pas");
+        }
+        
+    }catch(e){
+        next(e)
+    }
+}
+
+exports.resetPassword = async (req,res,next) => {
+    try{
+        const { userId, passwordToken } = req.params
+        const { password } = req.body
+        const user = await findUserPerId(userId)
+        const result = {}
+        if(user && password){
+            if(user.local.passwordToken === passwordToken){
+                if(new Date() < user.local.passwordTokenExpiration){
+                    user.local.password = await user.hashPassword(password)
+                    user.local.passwordTokenExpiration = null
+                    user.local.passwordToken = null
+                    await user.save()
+                    res.redirect('/tweets')
+                }else{
+                    result.password = {
+                        message :  "Le lien de réinitialisation a expiré, veuillez recommencer la procédure"
+                    }
+                    res.render('auth/auth-reset-password',{
+                        url : `https://${req.headers.host}/users/reset-password/${user._id}/${user.local.passwordToken}`,
+                        isAuthenticated : false,
+                        errors : result
+                    })
+                    
+                }
+            }else{
+                
+                result.password = {
+                    message :  "L'utilisateur n'a pas pu être vérifié, veuillez recommencer la procédure"
+                }
+                res.render('auth/auth-reset-password',{
+                    url : `https://${req.headers.host}/users/reset-password/${user._id}/${user.local.passwordToken}`,
+                    isAuthenticated : false,
+                    errors : result
+                })
+            }
+        }else{            
+            if(!password)
+                result.password = {
+                    message :  "Veuillez renseigner un mot de passe"
+                }
+            else
+                result.password = {
+                    message :  "L'utilisateur n'existe pas, veuillez recommencer la procédure"
+                }
+            res.render('auth/auth-reset-password',{
+                url : `https://${req.headers.host}/users/reset-password/${user._id}/${user.local.passwordToken}`,
+                isAuthenticated : false,
+                errors : result
+            })
+        }
+                
+    }catch(e){
+        next(e)
     }
 }

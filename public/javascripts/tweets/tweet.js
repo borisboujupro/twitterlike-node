@@ -12,6 +12,8 @@ deleteTweetBtnBinder = () => {
                 }).catch((err) => {
                     console.log(err)
                 })
+            }else{
+                console.log("Unable to delete Tweets without Axios")
             }
         }) 
     })
