@@ -1,4 +1,4 @@
-const { createUserLocal,findUserPerUsername,searchUserPerUsername, removeUserIdOfCurrentFollowing,addUserIdToCurrentFollowing} = require('../database/models/user.model')
+const { createUserLocal,findUserPerUsername, findUserPerId, searchUserPerUsername, removeUserIdOfCurrentFollowing,addUserIdToCurrentFollowing} = require('../database/models/user.model')
 const { getTweetsForUser } = require('../database/models/tweet.model')
 const path = require('path')
 const multer = require('multer')
@@ -13,6 +13,8 @@ const upload = multer({
     })
 })
 
+const emailFactory = require('../email')
+
 exports.signup = async (req,res,next) => {
     try{
         const {email , password, username } = req.body
@@ -21,6 +23,13 @@ exports.signup = async (req,res,next) => {
             if(err) {next(err)}    
             res.redirect('/tweets')
         })
+        emailFactory.sendEmailVerification({
+            to : user.local.email,
+            host : req.headers.host,
+            username : user.username,
+            userId : user._id,
+            emailToken : user.local.emailToken
+        }).catch( err => {console.log(err)})
         res.redirect('/tweets')
     } catch(e) {
         Object.keys(e.errors).forEach((value) => {console.log(value,e.errors[value].message)})
@@ -93,5 +102,21 @@ exports.unfollowUser = async (req,res,next) => {
         res.redirect(req.get('referer'))
     }catch(e){
         next(e)
+    }
+}
+
+exports.verifyEmailLink = async (req,res,next) => {
+    try {
+        const {userId , emailToken} = req.params
+        const user =  await findUserPerId(userId)
+        if(user && emailToken && emailToken === user.local.emailToken){
+            user.local.emailVerified = true
+            user.save() 
+            res.redirect('/tweets')
+        }else{
+            res.status(400).json("Email Verification Error")
+        }
+    } catch (error) {
+        next(error)
     }
 }

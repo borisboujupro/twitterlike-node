@@ -1,10 +1,13 @@
 const mongoose = require('mongoose')
 const bcryp = require('bcrypt')
+const { v4: uuidv4 } = require('uuid');
 
 const userSchema = mongoose.Schema({
     username : { type : String , required : [true , "You must provide a username"], unique : true},
     local : { 
         email : {  type : String ,  required : [true , "You must provide and email" ], unique : true},
+        emailToken : { type : String },
+        emailVerified : { type : Boolean, default : false},
         password : { type : String , required : [ true , "You must provide a password"] }
     },
     googleId : { type : String }, // TODO Chapitre Oauth2
@@ -31,7 +34,8 @@ exports.createUserLocal = async (email,password,username) => {
             username : username,
             local : {
                 email : email,
-                password : hashPassword
+                password : hashPassword,
+                emailToken : uuidv4()
             }
         }).save()
     }catch(e){
@@ -58,10 +62,7 @@ exports.searchUserPerUsername = (searchKey) => {
 
 exports.removeUserIdOfCurrentFollowing = (userId,currentUser) => {
     const userIndex = currentUser.following.indexOf(userId)
-    console.log("ici "+userIndex+"<-----------------------------------------")
-    console.log("ici "+JSON.stringify(currentUser.following)+"<-----------------------------------------")
     currentUser.following.splice(userIndex,1)
-    console.log("ici "+JSON.stringify(currentUser.following)+"<-----------------------------------------")
     return currentUser.save()
 }
 exports.addUserIdToCurrentFollowing = (userId,currentUser ) => {
@@ -70,3 +71,4 @@ exports.addUserIdToCurrentFollowing = (userId,currentUser ) => {
     return currentUser.save()
     
 }
+
